@@ -1,1 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+body {
+  background-image: url("https://www.hdwallpapers.in/download/dark_blue_brick_wall_background_hd_brick-HD.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  box-shadow: inset 0 0 155px 75px rgb(10, 2, 30);
+  color: white;
+  font-family: "Montserrat", sans-serif;
+  letter-spacing: 1px;
+}
+main {
+  padding: 0 1rem;
+  overflow: hidden;
+}
