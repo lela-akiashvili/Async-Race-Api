@@ -1,0 +1,5 @@
+header {
+  display: flex;
+  background-color:rgba(6, 0, 173, 0.148);
+  transition: transform scale(1.3);
+}
