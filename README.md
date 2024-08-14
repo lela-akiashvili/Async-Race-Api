@@ -27,7 +27,7 @@ ng serve -o
 
 ## Deployed
 
-You car visit site on [Epam-Async-Race](https://epam-race.netlify.app/garage)
+You car visit site on [Epam-Async-Race](https://epam-race.netlify.app)
 
 ## Checklist
 
