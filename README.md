@@ -31,6 +31,6 @@ You car visit site on [Epam-Async-Race](https://epam-race.netlify.app/garage)
 
 ## 🚀 UI Deployment
 
-- [] Successfully deploy the UI on one of the following platforms: GitHub Pages, Netlify, Vercel, Cloudflare Pages, or a similar service.
+- [ ] Successfully deploy the UI on one of the following platforms: GitHub Pages, Netlify, Vercel, Cloudflare Pages, or a similar service.
 
 
