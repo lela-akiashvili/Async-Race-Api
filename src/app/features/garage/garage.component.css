@@ -1,0 +1,135 @@
+.control-panel {
+  display: flex;
+  margin-bottom: 2rem;
+  justify-content: space-between;
+  align-items: center;
+}
+.control-panel button {
+  min-width: 80px;
+  padding: 5px 15px;
+  border-radius: 5px;
+  border: 3px solid rgb(255, 1, 255);
+  box-shadow: 0 0 5px 1px white;
+  background-color: rgba(119, 4, 115, 0.47);
+  color: white;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.control-panel input[type="text"] {
+  max-width: 100px;
+  border-radius: 5px;
+  box-shadow: 0 0 4px 1px white;
+  background-color: rgba(255, 255, 255, 0.902);
+  padding: 5px;
+  border: 3px solid rgb(255, 1, 255);
+}
+.control-panel input[type="color"] {
+  max-width: 30px;
+  padding: 0;
+  margin: 0;
+  min-height: 35px;
+  border-radius: 13rem;
+  border: 1px solid black;
+  border: none;
+  background-color: transparent;
+  outline: none;
+}
+.control-panel div div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.control-panel div {
+  display: grid;
+  gap: 0.5rem;
+}
+button:hover {
+  animation: border 2.5s ease-in-out infinite;
+}
+
+.car-lane {
+  border-top: 2px solid rgb(255, 34, 237);
+  border-bottom: 2px solid rgb(255, 34, 237);
+  border-radius: 1px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  color: rgb(195, 195, 195);
+  gap: 0.3rem;
+}
+h3 {
+  font-weight: 500;
+}
+.bi-bricks {
+  margin: -1px;
+  transform: rotate(90deg);
+}
+.start-line {
+  padding: 1px 0;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 3%;
+  left: 29%;
+  z-index: -1;
+}
+.race {
+  position: relative;
+}
+.finished {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: rgb(255, 123, 0);
+  box-shadow:  0 0 9px 1px rgb(255, 2, 2);
+  z-index: 2;
+}
+@keyframes border {
+  0% {
+    border: 3px solid transparent;
+  
+  }
+  20% {
+    border: 3px solid transparent;
+    border-left: 3px solid rgb(255, 1, 255);
+  }
+  40% {
+    border: 3px solid transparent;
+    border-top: 3px solid rgb(255, 1, 255);
+  }
+  70% {
+    border: 3px solid transparent;
+    border-right: 3px solid rgb(255, 1, 255);
+  }
+  100%{
+    border: 3px solid transparent; 
+     border-bottom: 3px solid rgb(255, 1, 255);
+  }
+
+}
+@media (max-width:580px){
+  .control-panel button{
+    font-size: 10px;
+    font-weight: 400;
+    padding: 3px 0;
+    text-wrap: wrap;
+  }
+  /* .control-panel div{
+    gap: 0;
+  } */
+  input[type=text]{
+    font-size: 10px;
+  }
+  input[type=color]{
+    min-height: 20px;
+  }
+  .start-line{
+    left: 25%;
+  }
+  .control-panel div div{
+    gap: 0;
+  }
+}
