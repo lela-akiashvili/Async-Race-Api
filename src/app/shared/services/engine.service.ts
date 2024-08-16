@@ -29,7 +29,7 @@ export class EngineService {
     );
   }
 
-  startsAllCarEngines(carIds: number[]): Observable<any[]> {
+  startsAllCarEngines(carIds: number[]): Observable<Engine[]> {
     const startRequests = carIds.map(id => this.startOrStopCarById(id, 'started'));
     return forkJoin(startRequests);
   }
