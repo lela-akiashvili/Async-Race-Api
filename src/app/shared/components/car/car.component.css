@@ -18,9 +18,7 @@ div span {
 button:enabled {
   cursor: pointer;
 }
-button:disabled {
-  cursor: initial;
-}
+
 .yellow {
   border: 2px solid yellow;
   color: yellow;
@@ -35,6 +33,13 @@ svg {
 .yellow:hover,
 .green:hover {
   animation: shining 2s ease-in-out infinite;
+}
+button:disabled {
+  cursor: initial;
+  box-shadow: none;
+}
+button:disabled:hover{
+  animation: none;
 }
 .car-move {
   animation-name: carMove;

@@ -15,6 +15,16 @@
   font-weight: 700;
   letter-spacing: 1px;
 }
+button:hover {
+  animation: border 2.5s ease-in-out infinite;
+}
+.control-panel button:disabled {
+  cursor: initial;
+  box-shadow: none;
+}
+button:disabled:hover{
+  animation: none;
+}
 .control-panel input[type="text"] {
   max-width: 100px;
   border-radius: 5px;
@@ -34,17 +44,14 @@
   background-color: transparent;
   outline: none;
 }
-.control-panel div div {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
 .control-panel div {
   display: grid;
   gap: 0.5rem;
 }
-button:hover {
-  animation: border 2.5s ease-in-out infinite;
+.control-panel div div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .car-lane {
@@ -71,7 +78,7 @@ h3 {
   flex-direction: column;
   position: absolute;
   top: 3%;
-  left: 29%;
+  left: 8.5rem;
   z-index: -1;
 }
 .race {
@@ -84,13 +91,12 @@ h3 {
   top: 0;
   right: 0;
   color: rgb(255, 123, 0);
-  box-shadow:  0 0 9px 1px rgb(255, 2, 2);
+  box-shadow: 0 0 9px 1px rgb(255, 2, 2);
   z-index: 2;
 }
 @keyframes border {
   0% {
     border: 3px solid transparent;
-  
   }
   20% {
     border: 3px solid transparent;
@@ -104,32 +110,39 @@ h3 {
     border: 3px solid transparent;
     border-right: 3px solid rgb(255, 1, 255);
   }
-  100%{
-    border: 3px solid transparent; 
-     border-bottom: 3px solid rgb(255, 1, 255);
+  100% {
+    border: 3px solid transparent;
+    border-bottom: 3px solid rgb(255, 1, 255);
   }
-
 }
-@media (max-width:580px){
-  .control-panel button{
+@media (max-width: 580px) {
+  .control-panel button {
     font-size: 10px;
     font-weight: 400;
     padding: 3px 0;
     text-wrap: wrap;
   }
-  /* .control-panel div{
-    gap: 0;
-  } */
-  input[type=text]{
+  input[type="text"] {
     font-size: 10px;
   }
-  input[type=color]{
+  input[type="color"] {
     min-height: 20px;
   }
-  .start-line{
-    left: 25%;
+  .start-line {
+    left: 7.5rem;
   }
-  .control-panel div div{
+  .control-panel div div {
     gap: 0;
+  }
+}
+
+@media (min-width: 935px) {
+  .control-panel div {
+    display: flex;
+  }
+}
+@media (min-width: 990px) {
+  .control-panel {
+    padding: 0 1rem;
   }
 }

@@ -1,3 +1,18 @@
 svg {
-    filter: drop-shadow(0 0 2px white) drop-shadow(0 0 1px white);
-  }
+  filter: drop-shadow(0 0 2px white) drop-shadow(0 0 1px white);
+}
+h1 {
+  padding: 1rem;
+  border-bottom: 5px solid rgb(255, 1, 255);
+  border-radius: 2px;
+}
+table {
+  width: 100%;
+  padding: 1rem 0;
+  margin: auto;
+}
+th,
+td {
+  width: 20%;
+  text-align: center;
+}

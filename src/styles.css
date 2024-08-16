@@ -17,3 +17,7 @@ main {
   padding: 0 1rem;
   overflow: hidden;
 }
+button:disabled:hover{
+  animation: none;
+  background-color: red;
+}

@@ -3,3 +3,8 @@ header {
   background-color:rgba(6, 0, 173, 0.148);
   transition: transform scale(1.3);
 }
+@media(min-width:600px){
+  header nav ul{
+    display: flex;
+  }
+}
