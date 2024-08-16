@@ -1,5 +1,4 @@
 import {
-  // ChangeDetectorRef,
   Component,
   inject,
   OnInit,
@@ -12,8 +11,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Car } from '../../shared/types/car';
 import { EngineService } from '../../shared/services/engine.service';
-// import { catchError, forkJoin, of } from 'rxjs';
-// import { WinnersService } from '../../shared/services/winners.service';
+import { randomBrands, randomModels } from '../../shared/types/randomCars';
 
 @Component({
   selector: 'app-garage',
@@ -25,14 +23,15 @@ import { EngineService } from '../../shared/services/engine.service';
 export class GarageComponent implements OnInit {
   public readonly carsService = inject(CarsService);
   private engineService = inject(EngineService);
-  // private winnerService = inject(WinnersService);
 
-  // private cdr = inject(ChangeDetectorRef);
   newCarName = '';
   newCarColor = '#ff0000';
   selectedCarId: number | null = null;
   newColor: string = '#ff0000';
   newBrand: string = '';
+  raceBlockBnt: boolean = false;
+  resetBlockBtn: boolean = true;
+  winner: { carBrand: string; duration: number } | null = null;
 
   @ViewChildren(CarComponent) carComponents!: QueryList<CarComponent>;
 
@@ -41,62 +40,152 @@ export class GarageComponent implements OnInit {
   }
 
   startRace() {
-    const carIds = this.carsService.carsSignal().map(car => car.id);
-  
-    // Start all engines simultaneously
+    const carIds = this.carsService.carsSignal().map((car) => car.id);
     this.engineService.startsAllCarEngines(carIds).subscribe({
       next: (responses) => {
-        // Start animation for each car
+        this.winner = null;
         this.carComponents.forEach((carComponent, index) => {
+          this.raceBlockBnt = true;
+          this.resetBlockBtn = false;
           const response = responses[index];
-          const duration = Math.round(response.distance / response.velocity) / 1000;
-  
-          // Start animation
+          const duration =
+            Math.round(response.distance / response.velocity) / 1000;
           const viewportWidth = window.innerWidth;
-          const carRect = carComponent.car.nativeElement.getBoundingClientRect();
+          const carRect =
+            carComponent.car.nativeElement.getBoundingClientRect();
           const carWidth = carRect.width;
           const carCurrentX = carRect.left;
           const remainingDistance = viewportWidth - carCurrentX - carWidth - 32;
-  
+
           carComponent.animationDuration = duration;
           carComponent.translateXValue = `${remainingDistance}px`;
           carComponent.carAnimation = true;
-  
-          // Send drive request
+
           this.driveCar(carComponent);
         });
       },
-      error: (err) => console.log('Error starting engines:', err)
+      error: (err) => console.log('Error starting engines:', err),
     });
   }
-  
+
   driveCar(carComponent: CarComponent) {
     this.engineService.driveRequestById(carComponent.carId).subscribe({
       next: (resp) => {
         if (resp.success) {
-          // Emit the winner if the car successfully completes the race
-          carComponent.winner.emit(carComponent.carBrand);
+          if (
+            !this.winner ||
+            carComponent.animationDuration < this.winner.duration
+          ) {
+            this.winner = {
+              carBrand: carComponent.carBrand,
+              duration: carComponent.animationDuration,
+            };
+          }
         }
       },
       error: () => {
-        // Stop animation on error
         const computedStyle = getComputedStyle(carComponent.car.nativeElement);
         const matrix = new DOMMatrix(computedStyle.transform);
-        const currentX = matrix.m41; // The current translation on the X axis
-  
+        const currentX = matrix.m41;
+
         carComponent.car.nativeElement.style.transform = `translateX(${currentX}px)`;
         carComponent.carAnimation = false;
-  
+
         console.log(`Error: Car with ID ${carComponent.carId} stopped moving.`);
-      }
+      },
+      complete: () => {
+        if (this.winner) {
+          console.log(
+            `The winner is ${this.winner.carBrand} with a time of ${this.winner.duration} seconds!`,
+          );
+        }
+      },
     });
   }
-  
+
+  // driveCar(carComponent: CarComponent) {
+  //   this.engineService.driveRequestById(carComponent.carId).subscribe({
+  //     next: (resp) => {
+  //       if (resp.success) {
+  //         console.log(carComponent.carBrand);
+  //       }
+  //     },
+  //     error: () => {
+  //       const computedStyle = getComputedStyle(carComponent.car.nativeElement);
+  //       const matrix = new DOMMatrix(computedStyle.transform);
+  //       const currentX = matrix.m41;
+
+  //       carComponent.car.nativeElement.style.transform = `translateX(${currentX}px)`;
+  //       carComponent.carAnimation = false;
+
+  //       console.log(`Error: Car with ID ${carComponent.carId} stopped moving.`);
+  //     },
+  //   });
+  // }
+
+  // driveCar(carComponent: CarComponent) {
+  //   this.engineService
+  //     .driveRequestById(carComponent.carId)
+  //     .pipe(take(1))
+  //     .subscribe({
+  //       next: (resp) => {
+  //         if (resp.success) {
+  //           console.log(carComponent.carBrand);
+  //         }
+  //       },
+  //       error: () => {
+  //         const computedStyle = getComputedStyle(
+  //           carComponent.car.nativeElement,
+  //         );
+  //         const matrix = new DOMMatrix(computedStyle.transform);
+  //         const currentX = matrix.m41;
+
+  //         carComponent.car.nativeElement.style.transform = `translateX(${currentX}px)`;
+  //         carComponent.carAnimation = false;
+
+  //         console.log(
+  //           `Error: Car with ID ${carComponent.carId} stopped moving.`,
+  //         );
+  //       },
+  //     });
+  // }
+
+  // driveCar(carComponent: CarComponent) {
+  //   this.engineService
+  //     .driveRequestById(carComponent.carId)
+  //     .pipe(
+  //       filter((resp) => resp.success),
+  //       take(1),
+  //     )
+  //     .subscribe({
+  //       next: () => {
+  //         console.log(carComponent.carBrand);
+  //         console.log(carComponent.carId);
+  //         console.log(carComponent.animationDuration);
+  //         console.log(this.winnerService.getWinnerById(carComponent.carId));
+  //       },
+  //       error: () => {
+  //         const computedStyle = getComputedStyle(
+  //           carComponent.car.nativeElement,
+  //         );
+  //         const matrix = new DOMMatrix(computedStyle.transform);
+  //         const currentX = matrix.m41;
+  //         carComponent.car.nativeElement.style.transform = `translateX(${currentX}px)`;
+  //         carComponent.carAnimation = false;
+  //         console.log(
+  //           `Error: Car with ID ${carComponent.carId} stopped moving.`,
+  //         );
+  //       },
+  //     });
+  // }
+
   resetRace() {
     this.carComponents.forEach((carComponent) => {
       carComponent.carAnimation = false;
-      carComponent.translateXValue = '0';
+      carComponent.car.nativeElement.style.transform = `translateX(0px)`;
     });
+    this.raceBlockBnt = false;
+    this.resetBlockBtn = true;
   }
 
   selectCar(id: number) {
@@ -112,7 +201,7 @@ export class GarageComponent implements OnInit {
         .updateCar(this.selectedCarId, this.newBrand, this.newColor)
         .subscribe(() => {
           console.log(
-            `Car ID ${this.selectedCarId} color updated to ${this.newColor} ${this.newBrand}`
+            `Car ID ${this.selectedCarId} color updated to ${this.newColor} ${this.newBrand}`,
           );
           this.carsService.getCars();
         });
@@ -131,5 +220,24 @@ export class GarageComponent implements OnInit {
     }
     this.newCarName = '';
     this.newCarColor = '#ff0000';
+  }
+  generateRandomCars(times: number) {
+    for (let i = 0; i < times; i++) {
+      const randomColor = `rgb(${this.random(256)},${this.random(256)},${this.random(256)})`;
+      const randomBrand = randomBrands[this.random(randomBrands.length - 1)];
+      const randomModel = randomModels[this.random(randomModels.length - 1)];
+      const randomCar = `${randomBrand} ${randomModel}`;
+  
+      this.carsService.createCar(randomCar, randomColor).subscribe(() => {
+        console.log(`Car added: ${randomCar} with color ${randomColor}`);
+      });
+    }
+  
+    // Call getCars after all cars have been created
+    this.carsService.getCars();
+  }
+
+  random(n: number) {
+    return Math.floor(Math.random() * n);
   }
 }
