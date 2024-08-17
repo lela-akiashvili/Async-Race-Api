@@ -1,24 +1,30 @@
 <main>
   <section class="control-panel">
     <div>
-      <button (click)="startRace()">RACE <i class="bi bi-play"></i></button>
-      <button (click)="resetRace()">RESET <i class="bi bi-arrow-clockwise"></i></button>
+      <button (click)="startRace()" [disabled]="raceBlockBnt">
+        RACE <i class="bi bi-play"></i>
+      </button>
+      <button (click)="resetRace()" [disabled]="resetBlockBtn">
+        RESET <i class="bi bi-arrow-clockwise"></i>
+      </button>
     </div>
     <div>
-      <button (click)="addNewCar()">ADD NEW CAR</button>
+      @if (newCarName === "" || raceBlockBnt === true) {
+        <button (click)="addNewCar()" disabled="true">ADD NEW CAR</button>
+      } @else if (newCarName !== null) {
+        <button (click)="addNewCar()">ADD NEW CAR</button>
+      }
       <div>
         <input type="text" placeholder="BRAND" [(ngModel)]="newCarName" />
         <input type="color" value="#ff0000" [(ngModel)]="newCarColor" />
       </div>
     </div>
     <div>
-      @if (newBrand===''||selectedCarId=== null) {
-      <button (click)="updateCar()" disabled="true">UPDATE</button>
-      } @else if(selectedCarId !== null){<button
-        (click)="updateCar()"
-      >
-        UPDATE</button
-      >}
+      @if (newBrand === "" || selectedCarId === null || raceBlockBnt === true) {
+        <button (click)="updateCar()" disabled="true">UPDATE</button>
+      } @else if (selectedCarId !== null) {
+        <button (click)="updateCar()">UPDATE</button>
+      }
       <div>
         <input type="text" placeholder="REBRAND" [(ngModel)]="newBrand" /><input
           type="color"
@@ -27,37 +33,45 @@
       </div>
     </div>
     <div>
-      <button>CREATE 100 CAR</button>
+      <button (click)="generateRandomCars(100)">CREATE 100 CAR</button>
     </div>
   </section>
   <section class="race">
     @for (car of carsService.carsSignal(); track $index) {
-    <div class="car-lane">
-      <app-car
-        [carColor]="car.color"
-        [carId]="car.id"
-        [carBrand]="car.name"
-        (carUpdate)="selectCar($event.id)"
-      />
-      <span class="start-line">
-        <i class="bi bi-bricks"></i><i class="bi bi-bricks"></i
-        ><i class="bi bi-bricks"></i><i class="bi bi-bricks"></i
-        ><i class="bi bi-bricks"></i>
-      </span>
-      <h3>{{ car.name }}</h3>
-    </div>
+      <div class="car-lane">
+        <app-car
+          [carColor]="car.color"
+          [carId]="car.id"
+          [carBrand]="car.name"
+          (carUpdate)="selectCar($event.id)"
+          (carDeleted)="onCarDeleted()"
+        />
+        <span class="start-line">
+          <i class="bi bi-bricks"></i><i class="bi bi-bricks"></i
+          ><i class="bi bi-bricks"></i><i class="bi bi-bricks"></i
+          ><i class="bi bi-bricks"></i>
+        </span>
+        <h3>{{ car.name }}</h3>
+      </div>
     } @empty {
-    <h1>NO CARS IN THE GARAGE</h1>
+      <h1>NO CARS IN THE GARAGE</h1>
     }
     <div class="finished">
       @for (item of carsService.carsSignal(); track $index) {
-      <i class="bi bi-bricks"></i><i class="bi bi-bricks"></i
-      ><i class="bi bi-bricks"></i><i class="bi bi-bricks"></i>
-      <i class="bi bi-bricks"></i> <i class="bi bi-bricks"></i>
+        <i class="bi bi-bricks"></i><i class="bi bi-bricks"></i
+        ><i class="bi bi-bricks"></i><i class="bi bi-bricks"></i>
+        <i class="bi bi-bricks"></i> <i class="bi bi-bricks"></i>
       }
     </div>
   </section>
-  <!-- <section>
-<h1>pagination</h1>
-  </section> -->
+  <section class="winner-banner" [style.display]="resetBlockBtn ? 'none' : 'grid'">
+    <h1>WINNER:</h1>
+    <h1>{{winner?.carBrand}}</h1>
+    <h3>Time:{{winner?.duration}}</h3>
+  </section>
+  <app-pagination 
+  [currentPage]="currentPage"
+  [totalPages]="totalPages"
+  (pageChange)="onPageChange($event)">
+</app-pagination>
 </main>

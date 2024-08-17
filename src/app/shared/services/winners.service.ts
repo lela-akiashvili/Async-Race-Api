@@ -17,40 +17,31 @@ export class WinnersService {
 
   winnersSignal = signal<Winner[]>([]);
   winnersCarSignal = signal<{ winner: Winner; car: Car }[]>([]);
+  totalWinnersCount = signal<number>(0);
 
-  // Using Signals To Fetch and Display Combined Data
-
-  // getWinners() {
-  //   this.http.get<Winner[]>(`${this.baseUrl}`).subscribe((winners) => {
-  //     this.winnersSignal.set(winners);
-  //     console.log(winners);
-  //   });
-  // }
-
-  // getWinnersCars() {
-  //   const winnerCarsRequest = this.winnersSignal().map((winner) =>
-  //     this.carService
-  //       .getCarById(winner.id)
-  //       .pipe(map((car) => ({ winner, car })))
-  //   );
-  //   forkJoin(winnerCarsRequest).subscribe((winnerCars) => {
-  //     this.winnersCarSignal.set(winnerCars);
-  //   });
-  // }
-
-  getWinnersCars(): void {
+  getWinnersCars(page: number = 1, limit: number = 10): void {
     this.http
-      .get<Winner[]>(`${this.baseUrl}`)
+      .get<Winner[]>(`${this.baseUrl}`, {
+        params: {
+          _page: page,
+          _limit: limit,
+        },
+        observe: 'response',
+      })
       .pipe(
-        switchMap((winners) =>
-          forkJoin(
+        switchMap((response) => {
+          const totalCount = Number(response.headers.get('X-Total-Count'));
+          this.totalWinnersCount.set(totalCount);
+
+          const winners = response.body || [];
+          return forkJoin(
             winners.map((winner) =>
               this.carService
                 .getCarById(winner.id)
-                .pipe(map((car) => ({ winner, car })))
-            )
-          )
-        )
+                .pipe(map((car) => ({ winner, car }))),
+            ),
+          );
+        }),
       )
       .subscribe((winnerCars) => {
         this.winnersCarSignal.set(winnerCars);
@@ -65,7 +56,7 @@ export class WinnersService {
     return this.http.post<void>(
       `${this.baseUrl}`,
       { data },
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' } },
     );
   }
   deleteWinner(id: number) {
@@ -75,7 +66,7 @@ export class WinnersService {
     return this.http.put<void>(
       `${this.baseUrl}/${id}`,
       { wins, time },
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' } },
     );
   }
 }

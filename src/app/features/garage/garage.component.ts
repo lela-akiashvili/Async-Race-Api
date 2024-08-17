@@ -12,18 +12,28 @@ import { FormsModule } from '@angular/forms';
 import { Car } from '../../shared/types/car';
 import { EngineService } from '../../shared/services/engine.service';
 import { randomBrands, randomModels } from '../../shared/types/randomCars';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import { WinnersService } from '../../shared/services/winners.service';
 
 @Component({
   selector: 'app-garage',
   standalone: true,
-  imports: [CarComponent, CommonModule, FormsModule],
+  imports: [CarComponent, CommonModule, FormsModule, PaginationComponent],
   templateUrl: './garage.component.html',
   styleUrls: ['./garage.component.css'],
 })
 export class GarageComponent implements OnInit {
   public readonly carsService = inject(CarsService);
   private engineService = inject(EngineService);
+  private winnerService = inject(WinnersService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
+  currentPage = 1;
+  pageSize = 7;
+  totalCars = 0;
+  totalPages = 1;
   newCarName = '';
   newCarColor = '#ff0000';
   selectedCarId: number | null = null;
@@ -36,7 +46,24 @@ export class GarageComponent implements OnInit {
   @ViewChildren(CarComponent) carComponents!: QueryList<CarComponent>;
 
   ngOnInit(): void {
-    this.carsService.getCars();
+    this.route.queryParamMap.subscribe((params) => {
+      this.currentPage = +params.get('_page')! || 1;
+      this.pageSize = +params.get('_limit')! || 7;
+      this.loadCars();
+    });
+  }
+
+  loadCars() {
+    this.carsService.getCars(this.currentPage, this.pageSize).subscribe({
+      next: (resp) => {
+        this.carsService.carsSignal.set(resp.cars);
+        this.totalCars = resp.totalCount;
+        this.totalPages = Math.ceil(this.totalCars / this.pageSize);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 
   startRace() {
@@ -44,9 +71,9 @@ export class GarageComponent implements OnInit {
     this.engineService.startsAllCarEngines(carIds).subscribe({
       next: (responses) => {
         this.winner = null;
+        this.raceBlockBnt = true;
+        this.resetBlockBtn = false;
         this.carComponents.forEach((carComponent, index) => {
-          this.raceBlockBnt = true;
-          this.resetBlockBtn = false;
           const response = responses[index];
           const duration =
             Math.round(response.distance / response.velocity) / 1000;
@@ -55,7 +82,7 @@ export class GarageComponent implements OnInit {
             carComponent.car.nativeElement.getBoundingClientRect();
           const carWidth = carRect.width;
           const carCurrentX = carRect.left;
-          const remainingDistance = viewportWidth - carCurrentX - carWidth - 32;
+          const remainingDistance = viewportWidth - carCurrentX - carWidth - 48;
 
           carComponent.animationDuration = duration;
           carComponent.translateXValue = `${remainingDistance}px`;
@@ -103,82 +130,6 @@ export class GarageComponent implements OnInit {
     });
   }
 
-  // driveCar(carComponent: CarComponent) {
-  //   this.engineService.driveRequestById(carComponent.carId).subscribe({
-  //     next: (resp) => {
-  //       if (resp.success) {
-  //         console.log(carComponent.carBrand);
-  //       }
-  //     },
-  //     error: () => {
-  //       const computedStyle = getComputedStyle(carComponent.car.nativeElement);
-  //       const matrix = new DOMMatrix(computedStyle.transform);
-  //       const currentX = matrix.m41;
-
-  //       carComponent.car.nativeElement.style.transform = `translateX(${currentX}px)`;
-  //       carComponent.carAnimation = false;
-
-  //       console.log(`Error: Car with ID ${carComponent.carId} stopped moving.`);
-  //     },
-  //   });
-  // }
-
-  // driveCar(carComponent: CarComponent) {
-  //   this.engineService
-  //     .driveRequestById(carComponent.carId)
-  //     .pipe(take(1))
-  //     .subscribe({
-  //       next: (resp) => {
-  //         if (resp.success) {
-  //           console.log(carComponent.carBrand);
-  //         }
-  //       },
-  //       error: () => {
-  //         const computedStyle = getComputedStyle(
-  //           carComponent.car.nativeElement,
-  //         );
-  //         const matrix = new DOMMatrix(computedStyle.transform);
-  //         const currentX = matrix.m41;
-
-  //         carComponent.car.nativeElement.style.transform = `translateX(${currentX}px)`;
-  //         carComponent.carAnimation = false;
-
-  //         console.log(
-  //           `Error: Car with ID ${carComponent.carId} stopped moving.`,
-  //         );
-  //       },
-  //     });
-  // }
-
-  // driveCar(carComponent: CarComponent) {
-  //   this.engineService
-  //     .driveRequestById(carComponent.carId)
-  //     .pipe(
-  //       filter((resp) => resp.success),
-  //       take(1),
-  //     )
-  //     .subscribe({
-  //       next: () => {
-  //         console.log(carComponent.carBrand);
-  //         console.log(carComponent.carId);
-  //         console.log(carComponent.animationDuration);
-  //         console.log(this.winnerService.getWinnerById(carComponent.carId));
-  //       },
-  //       error: () => {
-  //         const computedStyle = getComputedStyle(
-  //           carComponent.car.nativeElement,
-  //         );
-  //         const matrix = new DOMMatrix(computedStyle.transform);
-  //         const currentX = matrix.m41;
-  //         carComponent.car.nativeElement.style.transform = `translateX(${currentX}px)`;
-  //         carComponent.carAnimation = false;
-  //         console.log(
-  //           `Error: Car with ID ${carComponent.carId} stopped moving.`,
-  //         );
-  //       },
-  //     });
-  // }
-
   resetRace() {
     this.carComponents.forEach((carComponent) => {
       carComponent.carAnimation = false;
@@ -194,7 +145,13 @@ export class GarageComponent implements OnInit {
       this.newBrand = car.name;
     });
   }
-
+  updateWinner(carId: number) {
+    this.winnerService.getWinnerById(carId).subscribe({
+      next: (resp) => {
+        console.log(resp);
+      },
+    });
+  }
   updateCar() {
     if (this.selectedCarId !== null) {
       this.carsService
@@ -203,19 +160,21 @@ export class GarageComponent implements OnInit {
           console.log(
             `Car ID ${this.selectedCarId} color updated to ${this.newColor} ${this.newBrand}`,
           );
-          this.carsService.getCars();
+          this.carsService.getCars(this.currentPage, this.pageSize);
         });
     }
     this.newBrand = '';
   }
-
+  onCarDeleted() {
+    this.loadCars();
+  }
   addNewCar() {
     if (this.newCarColor && this.newCarName) {
       this.carsService
         .createCar(this.newCarName, this.newCarColor)
         .subscribe(() => {
           console.log('Car added');
-          this.carsService.getCars();
+          this.carsService.getCars(this.currentPage, this.pageSize);
         });
     }
     this.newCarName = '';
@@ -227,17 +186,22 @@ export class GarageComponent implements OnInit {
       const randomBrand = randomBrands[this.random(randomBrands.length - 1)];
       const randomModel = randomModels[this.random(randomModels.length - 1)];
       const randomCar = `${randomBrand} ${randomModel}`;
-  
+
       this.carsService.createCar(randomCar, randomColor).subscribe(() => {
         console.log(`Car added: ${randomCar} with color ${randomColor}`);
       });
     }
-  
-    // Call getCars after all cars have been created
-    this.carsService.getCars();
+    this.loadCars();
   }
-
   random(n: number) {
     return Math.floor(Math.random() * n);
+  }
+  onPageChange(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.router.navigate([], {
+        queryParams: { _page: page, _limit: this.pageSize },
+      });
+    }
+    // this.loadCars();
   }
 }

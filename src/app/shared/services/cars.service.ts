@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { ENVIRONMENT } from '../../environment/environment';
 import { Car } from '../types/car';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -14,11 +14,21 @@ export class CarsService {
 
   carsSignal = signal<Car[]>([]);
 
-  getCars() {
-    this.httpClient.get<Car[]>(`${this.baseUrl}`).subscribe((resp) => {
-      this.carsSignal.set(resp);
-      console.log(resp);
-    });
+  getCars(page: number, limit: number) {
+    return this.httpClient
+      .get<Car[]>(`${this.baseUrl}`, {
+        params: {
+          _page: page.toString(),
+          _limit: limit.toString(),
+        },
+        observe: 'response',
+      })
+      .pipe(
+        map((resp) => ({
+          cars: resp.body || [],
+          totalCount: parseInt(resp.headers.get('X-Total-Count') || '0', 10),
+        })),
+      );
   }
 
   getCarById(id: number): Observable<Car> {
@@ -36,7 +46,7 @@ export class CarsService {
     return this.httpClient.post<Car>(
       `${this.baseUrl}`,
       { name, color },
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { 'Content-Type': 'application/json' } },
     );
   }
   deleteCar(id: number): Observable<void> {
