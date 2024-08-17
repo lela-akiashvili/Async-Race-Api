@@ -40,6 +40,17 @@ import { RouterLink } from '@angular/router';
     background-color:rgba(6, 0, 173, 0.148);    transform: scale(1.05);
     transition:transform .5s ease;
   }
+  @media(min-width:600px){
+  header nav ul{
+    display: flex;
+    gap: 1rem;
+   
+  }
+  header{
+     justify-content: space-evenly;
+     margin-bottom:2rem;
+  }
+}
   `,
 })
 export class HeaderComponent {}
