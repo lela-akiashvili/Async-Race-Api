@@ -19,5 +19,7 @@ main {
 }
 button:disabled:hover{
   animation: none;
-  background-color: red;
+}
+button:enabled:hover{
+  cursor: pointer;
 }

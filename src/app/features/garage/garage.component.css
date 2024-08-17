@@ -1,3 +1,6 @@
+main{
+  position: relative;
+}
 .control-panel {
   display: flex;
   margin-bottom: 2rem;
@@ -53,7 +56,6 @@ button:disabled:hover{
   align-items: center;
   gap: 0.5rem;
 }
-
 .car-lane {
   border-top: 2px solid rgb(255, 34, 237);
   border-bottom: 2px solid rgb(255, 34, 237);
@@ -93,6 +95,23 @@ h3 {
   color: rgb(255, 123, 0);
   box-shadow: 0 0 9px 1px rgb(255, 2, 2);
   z-index: 2;
+}
+.winner-banner{
+  position: absolute;
+  background-color: rgba(0, 153, 255, 0.596);
+  text-align: center;
+  max-width: fit-content;
+  max-height: fit-content;
+  top: 25%;
+  left: 45%;
+  z-index: 3;
+  padding: 3rem;
+  display: grid;
+  gap: 2rem;
+  border-radius: 1rem;
+  border:5px solid rgb(106, 0, 255);
+  box-shadow:inset 0 0 10px 1px white;
+  display: none;
 }
 @keyframes border {
   0% {
@@ -135,7 +154,6 @@ h3 {
     gap: 0;
   }
 }
-
 @media (min-width: 935px) {
   .control-panel div {
     display: flex;
