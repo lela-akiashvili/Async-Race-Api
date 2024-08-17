@@ -59,6 +59,16 @@ export class GarageComponent implements OnInit {
         this.carsService.carsSignal.set(resp.cars);
         this.totalCars = resp.totalCount;
         this.totalPages = Math.ceil(this.totalCars / this.pageSize);
+
+        if (this.currentPage > 1 && resp.cars.length === 0) {
+          this.router.navigate([], {
+            queryParams: {
+              _page: this.currentPage - 1,
+              _limit: this.pageSize,
+            },
+            queryParamsHandling: 'merge',
+          });
+        }
       },
       error: (err) => {
         console.log(err);

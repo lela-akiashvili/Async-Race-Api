@@ -30,7 +30,7 @@ export class CarComponent implements OnChanges {
   @Input() carAnimation: boolean = false; // Two-way binding property
   @Input() animationDuration: number = 0;
   @Input() translateXValue: string = '0';
-
+  @Output() carDeleted = new EventEmitter<void>();
   @Output() carUpdate = new EventEmitter<{
     id: number;
     color: string;
@@ -72,7 +72,7 @@ export class CarComponent implements OnChanges {
     this.carService.deleteCar(this.carId).subscribe({
       next: () => {
         console.log(`Car with ID ${this.carId} deleted successfully.`);
-        this.carService.getCars();
+        this.carDeleted.emit();
       },
       error: (err) => console.log(err),
     });

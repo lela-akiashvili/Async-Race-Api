@@ -64,14 +64,14 @@ Deployment Platform: Successfully deploy the UI on one of the following platform
 - [x] Random Car Creation (20 points): There should be a button to create random cars (100 cars per click). Name should be assembled from two random parts, for example "Tesla" + "Model S", or "Ford" + "Mustang" (At least 10 different names for each part). Color should be also generated randomly.
 - [x] Car Management Buttons (10 points): Provide buttons near each car's image for updating its attributes or deleting it.
 - [x] Pagination (10 points): Implement pagination for the "Garage" view, displaying 7 cars per page.
-- [ ] EXTRA POINTS (20 points):
+- [x] EXTRA POINTS (20 points):
     - [x] Empty Garage Handle empty garage with user friendly message "No Cars" or something like this. Do it at your discretion.
-    - [ ]  Empty Garage Page If you remove the last one car on the page, you should be moved on the previous page, to hide the empty one.
+    - [x]  Empty Garage Page If you remove the last one car on the page, you should be moved on the previous page, to hide the empty one.
 
 # 🏆 Winners View (50 points)
 
 - [x] Display Winners (15 points): After some car wins it should be displayed at the "Winners view" table.
-- [ ] Pagination for Winners (10 points): Implement pagination for the "Winners" view, with 10 winners per page.
+- [x] Pagination for Winners (10 points): Implement pagination for the "Winners" view, with 10 winners per page.
 - [x] Winners Table (15 points): The table should include columns for the car's №, image, name, number of wins, and best time in seconds. If the same car wins more than once the number of wins should be incremented while best time should be saved only if it's better than the stored one.
 - [ ] Sorting Functionality (10 points): Allow users to sort the table by the number of wins and best time, in ascending or descending order.
 
