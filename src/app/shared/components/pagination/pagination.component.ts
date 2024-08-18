@@ -16,7 +16,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   </div>
  
   `,
-  styleUrl: './pagination.component.css',
+  styles:`
+  div{
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+  `,
 })
 export class PaginationComponent {
   @Input() currentPage = 1;
