@@ -23,3 +23,6 @@ button:disabled:hover{
 button:enabled:hover{
   cursor: pointer;
 }
+::-webkit-scrollbar{
+  width: 0;
+}
