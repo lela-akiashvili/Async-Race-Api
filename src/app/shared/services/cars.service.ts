@@ -1,15 +1,17 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 import { ENVIRONMENT } from '../../environment/environment';
 import { Car } from '../types/car';
-import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CarsService {
   private httpClient = inject(HttpClient);
+
   private env = inject(ENVIRONMENT);
+
   baseUrl = `${this.env.apiUrl}/garage`;
 
   carsSignal = signal<Car[]>([]);
@@ -49,6 +51,7 @@ export class CarsService {
       { headers: { 'Content-Type': 'application/json' } },
     );
   }
+
   deleteCar(id: number): Observable<void> {
     return this.httpClient.delete<void>(`${this.baseUrl}/${id}`);
   }

@@ -4,14 +4,13 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnChanges,
   Output,
-  SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { CarsService } from '../../services/cars.service';
 import { EngineService } from '../../services/engine.service';
-import { CommonModule } from '@angular/common';
+import { WinnersService } from '../../services/winners.service';
 
 @Component({
   selector: 'app-car',
@@ -20,55 +19,60 @@ import { CommonModule } from '@angular/common';
   templateUrl: './car.component.html',
   styleUrls: ['./car.component.css'],
 })
-export class CarComponent implements OnChanges {
+export class CarComponent {
   private carService = inject(CarsService);
+
   private engineService = inject(EngineService);
 
+  private winnerService = inject(WinnersService);
+
   @Input() carId: number = 0;
-  @Input() carColor: string = 'rgb(255, 0, 115)';
-  @Input() carBrand: string = 'BIRO';
-  @Input() carAnimation: boolean = false; // Two-way binding property
+
+  @Input() carColor: string = '';
+
+  @Input() carBrand: string = '';
+
+  @Input() carAnimation: boolean = false;
+
   @Input() animationDuration: number = 0;
+
   @Input() translateXValue: string = '0';
+
   @Output() carDeleted = new EventEmitter<void>();
+  
   @Output() carUpdate = new EventEmitter<{
     id: number;
     color: string;
     name: string;
   }>();
+  
   @Output() winner = new EventEmitter<string>();
+
   @ViewChild('car', { static: true }) car!: ElementRef<SVGElement>;
 
   stopBlocked = true;
+
   startBlocked = false;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['carAnimation']) {
-      this.handleAnimationChange();
-    }
-  }
-
-  private handleAnimationChange() {
-    if (this.carAnimation) {
-      // Start animation
-      this.car.nativeElement.style.setProperty(
-        '--translateX',
-        this.translateXValue,
-      );
-      this.car.nativeElement.style.animationDuration = `${this.animationDuration}s`;
-      this.car.nativeElement.classList.add('car-move');
-    } else {
-      // Stop animation
-      this.car.nativeElement.classList.remove('car-move');
-      this.car.nativeElement.style.transform = 'translateX(0)';
-    }
-  }
 
   onUpdateClick(newColor: string, carBrand: string) {
     this.carUpdate.emit({ id: this.carId, color: newColor, name: carBrand });
   }
 
   deleteCar() {
+    this.winnerService.getWinnerById(this.carId).subscribe({
+      next: () => {
+        this.winnerService.deleteWinner(this.carId).subscribe(() => {
+          console.log(`Winner with Car ID ${this.carId} deleted successfully.`);
+          this.deleteCarRecord();
+        });
+      },
+      error: () => {
+        this.deleteCarRecord();
+      },
+    });
+  }
+
+  private deleteCarRecord() {
     this.carService.deleteCar(this.carId).subscribe({
       next: () => {
         console.log(`Car with ID ${this.carId} deleted successfully.`);
@@ -111,8 +115,8 @@ export class CarComponent implements OnChanges {
         this.stopBlocked = true;
 
         this.carAnimation = false;
-        this.translateXValue = '0'; 
-        this.car.nativeElement.style.transform = `translateX(0)`;
+        this.translateXValue = '0';
+        this.car.nativeElement.style.transform = 'translateX(0)';
 
         console.log(`Car with ID ${id} stopped and reset.`);
       },

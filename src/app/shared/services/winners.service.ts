@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
+import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { ENVIRONMENT } from '../../environment/environment';
 import { Car } from '../types/car';
 import { Winner } from '../types/winner';
-import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { CarsService } from './cars.service';
 
 @Injectable({
@@ -11,12 +11,17 @@ import { CarsService } from './cars.service';
 })
 export class WinnersService {
   private http = inject(HttpClient);
+
   private env = inject(ENVIRONMENT);
+
   private baseUrl = `${this.env.apiUrl}/winners`;
+  
   private carService = inject(CarsService);
 
   winnersSignal = signal<Winner[]>([]);
+
   winnersCarSignal = signal<{ winner: Winner; car: Car }[]>([]);
+
   totalWinnersCount = signal<number>(0);
 
   getWinnersCars(page: number = 1, limit: number = 10): void {
@@ -53,15 +58,15 @@ export class WinnersService {
   }
 
   createWinner(data: Winner): Observable<void> {
-    return this.http.post<void>(
-      `${this.baseUrl}`,
-      { data },
-      { headers: { 'Content-Type': 'application/json' } },
-    );
+    return this.http.post<void>(`${this.baseUrl}`, data, {
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
-  deleteWinner(id: number) {
-    this.http.delete<void>(`${this.baseUrl}/${id}`);
+
+  deleteWinner(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
   updateWinner(id: number, wins: number, time: number): Observable<void> {
     return this.http.put<void>(
       `${this.baseUrl}/${id}`,
