@@ -12,6 +12,8 @@ import { CarsService } from '../../services/cars.service';
 import { EngineService } from '../../services/engine.service';
 import { WinnersService } from '../../services/winners.service';
 
+const  padding =32;
+const seconds = 1000;
 @Component({
   selector: 'app-car',
   standalone: true,
@@ -25,6 +27,7 @@ export class CarComponent {
   private engineService = inject(EngineService);
 
   private winnerService = inject(WinnersService);
+
 
   @Input() carId: number = 0;
 
@@ -88,12 +91,12 @@ export class CarComponent {
         this.startBlocked = true;
         this.stopBlocked = false;
 
-        const duration = Math.round(resp.distance / resp.velocity) / 1000;
+        const duration = Math.round(resp.distance / resp.velocity) / seconds;
         const viewportWidth = window.innerWidth;
         const carRect = this.car.nativeElement.getBoundingClientRect();
         const carWidth = carRect.width;
         const carCurrentX = carRect.left;
-        const remainingDistance = viewportWidth - carCurrentX - carWidth - 32;
+        const remainingDistance = viewportWidth - carCurrentX - carWidth - padding;
 
         this.animationDuration = duration;
         this.translateXValue = `${remainingDistance}px`;

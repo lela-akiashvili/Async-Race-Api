@@ -64,14 +64,18 @@
       }
     </div>
   </section>
-  <section class="winner-banner" [style.display]="resetBlockBtn ? 'none' : 'grid'">
+  <section
+    class="winner-banner"
+    [style.display]="winnerDeclared === true ? 'grid' : 'none'"
+  >
     <h1>WINNER:</h1>
-    <h1>{{winner?.carBrand}}</h1>
-    <h3>Time:{{winner?.duration}}</h3>
+    <h1>{{ winner?.carBrand }}</h1>
+    <h3>Time: {{ winner?.duration }} seconds</h3>
   </section>
-  <app-pagination 
-  [currentPage]="currentPage"
-  [totalPages]="totalPages"
-  (pageChange)="onPageChange($event)">
-</app-pagination>
+  <app-pagination
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (pageChange)="onPageChange($event)"
+  >
+  </app-pagination>
 </main>

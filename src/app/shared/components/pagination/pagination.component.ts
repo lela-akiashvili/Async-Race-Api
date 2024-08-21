@@ -35,14 +35,14 @@ export class PaginationComponent {
 
   prevPage() {
     if (this.currentPage > 1) {
-      this.currentPage--;
+      this.currentPage-=1;
       this.pageChange.emit(this.currentPage);
     }
   }
 
   nextPage() {
     if (this.currentPage < this.totalPages) {
-      this.currentPage++;
+      this.currentPage+=1;
       this.pageChange.emit(this.currentPage);
     }
   }

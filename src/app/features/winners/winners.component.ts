@@ -4,6 +4,7 @@ import { WinnersService } from '../../shared/services/winners.service';
 import { CarsService } from '../../shared/services/cars.service';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 
+const DEFAULT_LIMIT = 10;
 @Component({
   selector: 'app-winners',
   standalone: true,
@@ -18,10 +19,8 @@ export class WinnersComponent implements OnInit {
 
   currentPage = signal<number>(1);
 
-  pageSize = 10;
-
   totalPages = computed(() =>
-    Math.ceil(this.winnersService.totalWinnersCount() / this.pageSize),
+    Math.ceil(this.winnersService.totalWinnersCount() / DEFAULT_LIMIT),
   );
 
   ngOnInit(): void {
@@ -29,7 +28,7 @@ export class WinnersComponent implements OnInit {
   }
 
   loadWinners() {
-    this.winnersService.getWinnersCars(this.currentPage(), this.pageSize);
+    this.winnersService.getWinnersCars(this.currentPage(), DEFAULT_LIMIT);
   }
 
   onPageChange(newPage: number) {
