@@ -6,6 +6,8 @@ import { Car } from '../types/car';
 import { Winner } from '../types/winner';
 import { CarsService } from './cars.service';
 
+const DEFAULT_LIMIT = 10;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -15,7 +17,7 @@ export class WinnersService {
   private env = inject(ENVIRONMENT);
 
   private baseUrl = `${this.env.apiUrl}/winners`;
-  
+
   private carService = inject(CarsService);
 
   winnersSignal = signal<Winner[]>([]);
@@ -24,7 +26,7 @@ export class WinnersService {
 
   totalWinnersCount = signal<number>(0);
 
-  getWinnersCars(page: number = 1, limit: number = 10): void {
+  getWinnersCars(page: number = 1, limit: number = DEFAULT_LIMIT): void {
     this.http
       .get<Winner[]>(`${this.baseUrl}`, {
         params: {
@@ -67,8 +69,8 @@ export class WinnersService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  updateWinner(id: number, wins: number, time: number): Observable<void> {
-    return this.http.put<void>(
+  updateWinner(id: number, wins: number, time: number): Observable<Winner> {
+    return this.http.put<Winner>(
       `${this.baseUrl}/${id}`,
       { wins, time },
       { headers: { 'Content-Type': 'application/json' } },
